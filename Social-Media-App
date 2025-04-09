@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Social Media App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+
+  <div class="max-w-xl mx-auto mt-10 p-4" id="app">
+    <h1 class="text-2xl font-bold mb-4">Register</h1>
+    <div class="bg-white p-4 rounded shadow space-y-3" id="registerForm">
+      <input type="email" id="email" placeholder="Email" class="w-full border p-2 rounded" required />
+      <input type="text" id="name" placeholder="Name" class="w-full border p-2 rounded" required />
+      <input type="tel" id="mobileNo" placeholder="Mobile No" class="w-full border p-2 rounded" required />
+      <input type="text" id="githubUsername" placeholder="GitHub Username" class="w-full border p-2 rounded" required />
+      <input type="text" id="rollNo" placeholder="Roll No" class="w-full border p-2 rounded" required />
+      <input type="text" id="collegeName" placeholder="College Name" class="w-full border p-2 rounded" required />
+      <input type="text" id="accessCode" placeholder="Access Code" class="w-full border p-2 rounded" required />
+      <button onclick="registerUser()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Register</button>
+    </div>
+  </div>
+
+  <div class="max-w-2xl mx-auto p-4 hidden" id="mainApp">
+    <h1 class="text-3xl font-bold mb-4" id="welcomeText"></h1>
+    <div class="bg-white p-4 mb-6 rounded shadow">
+      <textarea id="postInput" placeholder="What's on your mind?" class="w-full border p-2 rounded mb-2" rows="3"></textarea>
+      <button onclick="addPost()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Post</button>
+    </div>
+    <div id="feed" class="space-y-4"></div>
+  </div>
+
+  <script>
+
+    const state = {
+      currentUser: null,
+      posts: []
+    };
+
+ 
+    function initSamplePosts() {
+      const samplePosts = [
+        "Post about ant",
+        "Post about elephant",
+        "Post about ocean",
+        "Post about monkey",
+        "Post about zobra",
+        "Post about Iglod",
+        "Post about house",
+        "Post about bat",
+        "Post about umbrella"
+      ];
+      
+      state.posts = samplePosts.map(content => ({
+        id: Date.now() + Math.random(),
+        name: state.currentUser.name,
+        content,
+        timestamp: new Date().toLocaleString()
+      }));
+    }
+
+
+    function registerUser() {
+      const inputs = document.querySelectorAll('#registerForm input[required]');
+      let isValid = true;
+
+      inputs.forEach(input => {
+        if (!input.value.trim()) {
+          input.classList.add('border-red-500');
+          isValid = false;
+        } else {
+          input.classList.remove('border-red-500');
+        }
+      });
+
+      if (!isValid) {
+        alert('Please fill all required fields!');
+        return;
+      }
+
+      state.currentUser = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        mobileNo: document.getElementById("mobileNo").value.trim(),
+        githubUsername: document.getElementById("githubUsername").value.trim(),
+        rollNo: document.getElementById("rollNo").value.trim(),
+        collegeName: document.getElementById("collegeName").value.trim(),
+        accessCode: document.getElementById("accessCode").value.trim(),
+        clientID: "d9cbb699-6a27-44a5-8d59-8b1befa816da",
+        clientSecret: "tVJaaaRBSeXcRXeM",
+        id: "001",
+        userId: "rk001"
+      };
+
+      document.getElementById("registerForm").style.display = "none";
+      document.getElementById("mainApp").style.display = "block";
+      document.getElementById("welcomeText").textContent = `Welcome, ${state.currentUser.name}`;
+
+      initSamplePosts();
+      renderFeed();
+    }
+
+    function renderFeed() {
+      const feed = document.getElementById("feed");
+      feed.innerHTML = "";
+      
+      state.posts.forEach(post => {
+        const postElement = document.createElement("div");
+        postElement.className = "bg-white p-4 rounded shadow";
+        postElement.innerHTML = `
+          <p class="font-semibold capitalize">${post.name}</p>
+          <p class="text-sm text-gray-500">${post.timestamp}</p>
+          <p class="mt-2">${post.content}</p>
+        `;
+        feed.appendChild(postElement);
+      });
+    }
+
+
+    function addPost() {
+      const postInput = document.getElementById("postInput");
+      const content = postInput.value.trim();
+      
+      if (content === "") {
+        postInput.classList.add('border-red-500');
+        return;
+      }
+      
+      postInput.classList.remove('border-red-500');
+      
+      const newPost = {
+        id: Date.now(),
+        name: state.currentUser.name,
+        content,
+        timestamp: new Date().toLocaleString()
+      };
+      
+      state.posts.unshift(newPost);
+      renderFeed();
+      postInput.value = "";
+    }
+
+
+    document.getElementById("postInput").addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        addPost();
+      }
+    });
+  </script>
+
+</body>
+</html>
